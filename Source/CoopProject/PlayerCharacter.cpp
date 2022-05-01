@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "CharacterCameraSelector.h"
 
 //////////////////////////////////////////////////////////////////////////
 // APlayerCharacter
@@ -42,9 +43,9 @@ APlayerCharacter::APlayerCharacter()
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	m_cameraManager = CreateDefaultSubobject<UTPSCharacterCameraManager>(TEXT("CameraManager"));
+	m_cameraSelector = CreateDefaultSubobject<UCharacterCameraSelector>(TEXT("CameraManager"));
+	m_cameraSelector->Setup(this, CameraBoom, FollowCamera);
 
-	m_cameraManager->Setup(this, CameraBoom, FollowCamera);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,7 +131,12 @@ void APlayerCharacter::MoveRight(float Value)
 
 void APlayerCharacter::Crouch()
 {
-	ACharacter::Crouch();
+	if (m_cameraSelector)
+	{
+		m_acctualCamera = !m_acctualCamera;
+		m_cameraSelector->SwitchCamera(m_acctualCamera);
+	}
+	/*ACharacter::Crouch();*/
 }
 
 void APlayerCharacter::UnCrouch()

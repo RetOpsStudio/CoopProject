@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
 #include "GameFramework/Character.h"
-#include "TPSCharacterCameraManager.h"
 #include "PlayerCharacter.generated.h"
 
 UCLASS(config = Game)
@@ -63,8 +62,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 		class UCameraComponent* FollowCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-		UTPSCharacterCameraManager* m_cameraManager = nullptr;
+	UPROPERTY()
+	class UCharacterCameraSelector* m_cameraSelector = nullptr;
+
+	bool m_acctualCamera = true; //TODO REFACTOR!
 
 };
 

@@ -6,7 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "CharacterCameraManagerBase.generated.h"
 
-
+class APlayerCharacter;
+class USpringArmComponent;
+class UCameraComponent;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class COOPPROJECT_API UCharacterCameraManagerBase : public UActorComponent
 {
@@ -16,13 +18,15 @@ public:
 	// Sets default values for this component's properties
 	UCharacterCameraManagerBase();
 
+	virtual void Setup(APlayerCharacter* playerCharacter, USpringArmComponent* cameraBoom, UCameraComponent* followCamera);
+	virtual void SetupPlayerCamera() { return; }
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	UPROPERTY()
+	USpringArmComponent* m_cameraBoom = nullptr;
+	UPROPERTY()
+	UCameraComponent* m_followCamera = nullptr;
+	UPROPERTY()
+	APlayerCharacter* m_playerCharacter = nullptr;
 
 		
 };

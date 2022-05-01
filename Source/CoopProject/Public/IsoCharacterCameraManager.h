@@ -4,22 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "CharacterCameraManagerBase.h"
-#include "TPSCharacterCameraManager.generated.h"
+#include "IsoCharacterCameraManager.generated.h"
 
 /**
  * 
  */
-class APlayerCharacter;
-class USpringArmComponent;
-class UCameraComponent;
 UCLASS()
-class COOPPROJECT_API UTPSCharacterCameraManager : public UCharacterCameraManagerBase
+class COOPPROJECT_API UIsoCharacterCameraManager : public UCharacterCameraManagerBase
 {
 	GENERATED_BODY()
-
 public:
-	UTPSCharacterCameraManager();
+	UIsoCharacterCameraManager();
 	virtual void Setup(APlayerCharacter* playerCharacter, USpringArmComponent* cameraBoom, UCameraComponent* followCamera) override;
 	virtual void SetupPlayerCamera() override;
-
 };

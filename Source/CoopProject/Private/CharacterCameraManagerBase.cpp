@@ -14,21 +14,12 @@ UCharacterCameraManagerBase::UCharacterCameraManagerBase()
 }
 
 
-// Called when the game starts
-void UCharacterCameraManagerBase::BeginPlay()
+void UCharacterCameraManagerBase::Setup(APlayerCharacter* playerCharacter, USpringArmComponent* cameraBoom, UCameraComponent* followCamera)
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	m_playerCharacter = playerCharacter;
+	m_cameraBoom = cameraBoom;
+	m_followCamera = followCamera;
 }
 
 
-// Called every frame
-void UCharacterCameraManagerBase::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
 
