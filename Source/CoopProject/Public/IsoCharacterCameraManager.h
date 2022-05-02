@@ -17,4 +17,8 @@ public:
 	UIsoCharacterCameraManager();
 	virtual void Setup(APlayerCharacter* playerCharacter, USpringArmComponent* cameraBoom, UCameraComponent* followCamera) override;
 	virtual void SetupPlayerCamera() override;
+
+protected:
+	UPROPERTY(EditAnywhere)
+		float m_cameraBoomAngle = -70;
 };

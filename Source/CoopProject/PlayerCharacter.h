@@ -16,8 +16,11 @@ public:
 	APlayerCharacter();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input)
+		float turnRateGamepad = 2;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input)
-	float TurnRateGamepad;
+	bool bIsMouseMovementEnabled = true;
 
 protected:
 
@@ -45,11 +48,6 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
-	/** Handler for when a touch input begins. */
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	/** Handler for when a touch input stops. */
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -65,7 +63,6 @@ private:
 	UPROPERTY()
 	class UCharacterCameraSelector* m_cameraSelector = nullptr;
 
-	bool m_acctualCamera = true; //TODO REFACTOR!
 
 };
 

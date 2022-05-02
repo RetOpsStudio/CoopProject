@@ -28,5 +28,8 @@ protected:
 	UPROPERTY()
 	APlayerCharacter* m_playerCharacter = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	float m_cameraBoomLength = 400.f;
+
 		
 };
