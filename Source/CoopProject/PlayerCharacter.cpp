@@ -2,7 +2,6 @@
 
 
 #include "PlayerCharacter.h"
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -17,10 +16,9 @@
 
 APlayerCharacter::APlayerCharacter()
 {
+	bAlwaysRelevant = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-
-
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -36,11 +34,18 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	m_cameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	m_followCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	m_cameraSelector = CreateDefaultSubobject<UCharacterCameraSelector>(TEXT("CameraManager"));
-	m_cameraSelector->Setup(this, CameraBoom, FollowCamera);
+	m_cameraSelector->Setup(this, m_cameraBoom, m_followCamera);
 
+	AbilitySystemComponent = CreateDefaultSubobject<UCoopAbilitySystemComponent>(TEXT("Ability System Component"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	Attributes = CreateDefaultSubobject<UPlayerAttributeSet>(TEXT("Attributes"));
+
+	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -58,8 +63,87 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &APlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APlayerCharacter::TurnAtRate/*&APawn::AddControllerYawInput*/);
 	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APlayerCharacter::LookUpAtRate/*&APawn::AddControllerPitchInput*/);
+
+	if (IsValid(InputComponent) && IsValid(AbilitySystemComponent))
+	{
+		const FGameplayAbilityInputBinds binds("Confirm", "Cancel", "EAbilityInputID",
+			static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel));
+		
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, binds);		
+	}
 }
 
+void APlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	/** Server GAS init */
+	if (IsValid(AbilitySystemComponent))
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		InitializeAttributes();
+		GiveAbilities();
+	}
+}
+
+void APlayerCharacter::InitializeAttributes()
+{
+	if (!IsValid(AbilitySystemComponent) || !IsValid(DefaultAttributeEffect))
+	{
+		return;
+	}
+
+	FGameplayEffectContextHandle effectContext = AbilitySystemComponent->MakeEffectContext();
+	effectContext.AddSourceObject(this);
+
+	FGameplayEffectSpecHandle specHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, effectContext);
+
+	if (specHandle.IsValid())
+	{
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
+	}
+}
+
+void APlayerCharacter::GiveAbilities()
+{
+	if (!HasAuthority() || !IsValid(AbilitySystemComponent))
+	{
+		return;
+	}
+
+	for (TSubclassOf<UPlayerGameplayAbilityBase>& ability : DefaultAbilities)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(ability, 1, static_cast<int32>(ability.GetDefaultObject()->AbilityInputID)));
+	}
+}
+
+void APlayerCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	/** Client GAS init */
+	if (!IsValid(AbilitySystemComponent))
+	{
+		return;
+	}
+	
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitializeAttributes();
+
+	if (!IsValid(InputComponent))
+	{
+		return;			
+	}
+	
+	const FGameplayAbilityInputBinds binds("Confirm", "Cancel", "EAbilityInputID",
+			static_cast<int32>(EAbilityInputID::Confirm), static_cast<int32>(EAbilityInputID::Cancel));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, binds);
+}
+
+UAbilitySystemComponent* APlayerCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
 
 void APlayerCharacter::TurnAtRate(float Rate)
 {
@@ -123,4 +207,3 @@ void APlayerCharacter::UnCrouch()
 {
 	ACharacter::UnCrouch();
 }
-
