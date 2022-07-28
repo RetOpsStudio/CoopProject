@@ -57,8 +57,7 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
-	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &APlayerCharacter::Crouch);
-	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &APlayerCharacter::UnCrouch);
+	PlayerInputComponent->BindAction("Switch Camera", IE_Pressed, this, &APlayerCharacter::SwitchCamera);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &APlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APlayerCharacter::TurnAtRate/*&APawn::AddControllerYawInput*/);
@@ -145,7 +144,7 @@ UAbilitySystemComponent* APlayerCharacter::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void APlayerCharacter::TurnAtRate(float Rate)
+void APlayerCharacter::TurnAtRate(const float Rate)
 {
 	// calculate delta for this frame from the rate information
 	if(!bIsMouseMovementEnabled)
@@ -155,7 +154,7 @@ void APlayerCharacter::TurnAtRate(float Rate)
 	AddControllerYawInput(Rate * turnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
-void APlayerCharacter::LookUpAtRate(float Rate)
+void APlayerCharacter::LookUpAtRate(const float Rate)
 {
 	if (!bIsMouseMovementEnabled)
 	{
@@ -165,7 +164,7 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * turnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
-void APlayerCharacter::MoveForward(float Value)
+void APlayerCharacter::MoveForward(const float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -179,7 +178,7 @@ void APlayerCharacter::MoveForward(float Value)
 	}
 }
 
-void APlayerCharacter::MoveRight(float Value)
+void APlayerCharacter::MoveRight(const float Value)
 {
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
@@ -194,16 +193,11 @@ void APlayerCharacter::MoveRight(float Value)
 	}
 }
 
-void APlayerCharacter::Crouch()
+void APlayerCharacter::SwitchCamera()
 {
 	if (IsValid(m_cameraSelector))
 	{
 		m_cameraSelector->SwitchCamera(ECameras::NEXT_CAMERA);
 	}
-	/*ACharacter::Crouch();*/
 }
 
-void APlayerCharacter::UnCrouch()
-{
-	ACharacter::UnCrouch();
-}
