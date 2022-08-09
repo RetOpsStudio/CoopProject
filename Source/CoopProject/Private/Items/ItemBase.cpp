@@ -3,6 +3,8 @@
 #include "Items/ItemBase.h"
 #include "AbilitySystemInterface.h"
 #include "Components/BoxComponent.h"
+#include "GAS/CoopAbilitySystemComponent.h"
+#include "GameplayEffects/GEButtonPressed.h"
 
 // Sets default values
 AItemBase::AItemBase()
@@ -12,7 +14,7 @@ AItemBase::AItemBase()
 
 	m_volume = CreateDefaultSubobject<UBoxComponent>(TEXT("Volume"));
 	m_volume->SetupAttachment(GetRootComponent());
-	m_volume->InitBoxExtent(FVector(1000.f, 1000.f, 1000.f));
+	m_volume->InitBoxExtent(FVector(100.f, 100.f, 100.f));
 	m_volume->SetCollisionResponseToAllChannels(ECR_Overlap);
 
 }
@@ -26,22 +28,58 @@ void AItemBase::BeginPlay()
 	m_volume->OnComponentEndOverlap.AddDynamic(this, &AItemBase::OnItemCancelActivate);
 	
 }
+
+///TODO move this whole logic on ability -> Actor activating item will activate ability to do so, then this component will apply effect on him
 void AItemBase::OnItemBeginActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<IAbilitySystemInterface>(OtherActor))
+	if (!HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cast successfull entering"));
+		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("entering"));
+	auto abilitySystemActor = Cast<IAbilitySystemInterface>(OtherActor);
+	if(!abilitySystemActor)
+	{
+		return;
+	}
+		
+	UE_LOG(LogTemp, Warning, TEXT("ImServer"));
+	auto ASC = abilitySystemActor->GetAbilitySystemComponent();
+	if (!IsValid(ASC))
+	{
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Asc Valid"));
+	FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
+	effectContext.AddSourceObject(this);
 
+	FGameplayEffectSpecHandle specHandle = ASC->MakeOutgoingSpec(m_effectToApply, 1, effectContext);
+
+	if (specHandle.IsValid())
+	{
+		ASC->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
+	}
 }
+
+///TODO move this whole logic on ability -> Actor activating item will activate ability to do so, then this component will apply effect on him
 void AItemBase::OnItemCancelActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (Cast<IAbilitySystemInterface>(OtherActor))
+	if (!HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cast successfull Leaving"));
+		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Leaving"));
+	auto abilitySystemActor = Cast<IAbilitySystemInterface>(OtherActor);
+	if (!abilitySystemActor)
+	{
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("ImServer"));
+	auto ASC = abilitySystemActor->GetAbilitySystemComponent();
+	if (!IsValid(ASC))
+	{
+		return;
+	}
+
 }
 
 
@@ -50,10 +88,5 @@ void AItemBase::PostInitializeComponents()
 	Super::PostInitializeComponents();
 }
 
-//// Called every frame
-//void AItemBase::Tick(float DeltaTime)
-//{
-//	Super::Tick(DeltaTime);
-//
-//}
+
 

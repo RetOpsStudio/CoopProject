@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-//#include "Components/PrimitiveComponent.h"
+#include "GAS/PlayerGameplayAbilityBase.h"
 #include "ItemBase.generated.h"
 
 UCLASS()
@@ -26,14 +26,17 @@ protected:
 	void OnItemCancelActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	virtual void PostInitializeComponents() override;
-
-public:	
-	// Called every frame
-	//virtual void Tick(float DeltaTime) override;
-
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> m_effectToApply;
+	
 private:
+	/*TODO delete it after testing finish*/
 	/*testing purposes*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* m_volume;
+
+
+
 
 };

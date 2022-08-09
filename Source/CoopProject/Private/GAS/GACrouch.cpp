@@ -2,6 +2,7 @@
 
 #include "GAS/GACrouch.h"
 #include "GameFramework/Character.h"
+
 UGACrouch::UGACrouch() : Super()
 {
 	AbilityInputID = EAbilityInputID::Crouch;
@@ -23,3 +24,4 @@ void UGACrouch::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGamep
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
+
