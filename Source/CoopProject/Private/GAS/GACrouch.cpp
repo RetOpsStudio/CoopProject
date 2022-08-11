@@ -10,7 +10,6 @@ UGACrouch::UGACrouch() : Super()
 
 void UGACrouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	UE_LOG(LogTemp, Warning, TEXT("CrouchActivated"));
 	ACharacter* playerCharacter = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (IsValid(playerCharacter))
 	{

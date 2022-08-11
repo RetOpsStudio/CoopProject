@@ -11,5 +11,6 @@ enum class EAbilityInputID : uint8
 	Confirm,
 	Cancel,
 	Crouch,
+	Use,
 	Test,
 };

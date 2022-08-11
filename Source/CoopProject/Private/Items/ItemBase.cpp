@@ -14,7 +14,7 @@ AItemBase::AItemBase()
 
 	m_volume = CreateDefaultSubobject<UBoxComponent>(TEXT("Volume"));
 	m_volume->SetupAttachment(GetRootComponent());
-	m_volume->InitBoxExtent(FVector(100.f, 100.f, 100.f));
+	m_volume->InitBoxExtent(FVector(50.f, 50.f, 50.f));
 	m_volume->SetCollisionResponseToAllChannels(ECR_Overlap);
 
 }
@@ -22,33 +22,33 @@ AItemBase::AItemBase()
 // Called when the game starts or when spawned
 void AItemBase::BeginPlay()
 {
-	Super::BeginPlay();
-
-	m_volume->OnComponentBeginOverlap.AddDynamic(this, &AItemBase::OnItemBeginActivate);
-	m_volume->OnComponentEndOverlap.AddDynamic(this, &AItemBase::OnItemCancelActivate);
-	
+	Super::BeginPlay();	
 }
 
+
 ///TODO move this whole logic on ability -> Actor activating item will activate ability to do so, then this component will apply effect on him
-void AItemBase::OnItemBeginActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AItemBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo)
 {
 	if (!HasAuthority())
 	{
 		return;
 	}
-	auto abilitySystemActor = Cast<IAbilitySystemInterface>(OtherActor);
-	if(!abilitySystemActor)
+
+	PutGameplayEffectOnUsingActor(usingActorInfo);
+
+
+	OnItemBeginActivate();
+}
+void AItemBase::PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo)
+{
+	//TODO find if that shouldnt be refactored
+	if (!IsValid(m_effectToApply))
 	{
 		return;
 	}
-		
 	UE_LOG(LogTemp, Warning, TEXT("ImServer"));
-	auto ASC = abilitySystemActor->GetAbilitySystemComponent();
-	if (!IsValid(ASC))
-	{
-		return;
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Asc Valid"));
+	auto ASC = usingActorInfo.AbilitySystemComponent;
+
 	FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
 	effectContext.AddSourceObject(this);
 
@@ -59,27 +59,15 @@ void AItemBase::OnItemBeginActivate(UPrimitiveComponent* OverlappedComponent, AA
 		ASC->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
 	}
 }
-
-///TODO move this whole logic on ability -> Actor activating item will activate ability to do so, then this component will apply effect on him
-void AItemBase::OnItemCancelActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void AItemBase::OnItemBeginActivate()
 {
-	if (!HasAuthority())
-	{
-		return;
-	}
-	auto abilitySystemActor = Cast<IAbilitySystemInterface>(OtherActor);
-	if (!abilitySystemActor)
-	{
-		return;
-	}
+	//TODO Rmove this
+	this->GetRootComponent()->AddLocalRotation(FQuat(20, 2, 2, 2));
+}
 
-	UE_LOG(LogTemp, Warning, TEXT("ImServer"));
-	auto ASC = abilitySystemActor->GetAbilitySystemComponent();
-	if (!IsValid(ASC))
-	{
-		return;
-	}
-
+void AItemBase::OnItemCancelActivate()
+{
+	
 }
 
 

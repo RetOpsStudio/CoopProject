@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GAS/PlayerGameplayAbilityBase.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "ItemBase.generated.h"
 
 UCLASS()
@@ -15,24 +16,30 @@ class COOPPROJECT_API AItemBase : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AItemBase();
+	virtual ~AItemBase() = default;
+	UFUNCTION()
+	void UseItem(const FGameplayAbilityActorInfo& usingActorInfo);
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnItemBeginActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnItemBeginActivate();
 	UFUNCTION()
-	void OnItemCancelActivate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	virtual void OnItemCancelActivate();
 
 	virtual void PostInitializeComponents() override;
+
+	UFUNCTION()
+	void PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo);
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> m_effectToApply;
 	
 private:
-	/*TODO delete it after testing finish*/
-	/*testing purposes*/
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* m_volume;
 
