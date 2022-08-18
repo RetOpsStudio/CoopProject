@@ -6,7 +6,6 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
 #include "Items/ItemBase.h"
-#include <algorithm>
 
 UGAUse::UGAUse() : Super()
 {
@@ -22,52 +21,44 @@ void UGAUse::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGam
 
 void UGAUse::GrabberPrototype_InFrontOfActor(const FGameplayAbilityActorInfo* ActorInfo)
 {
-	//TODO refactor this, cause now its only prototype
-	auto actor = ActorInfo->OwnerActor;
-	auto location = actor->GetActorLocation();
-	FVector forwardVect = actor->GetActorForwardVector();
-	//add forward offset
-	location += forwardVect * m_forwardOffset;
-	FVector heightVector = FVector::UnitZ() -  UKismetMathLibrary::ProjectVectorOnToVector(FVector::UnitZ(), forwardVect);
-	//should be normalized anyway but...
-	heightVector.Normalize();
+	TArray< FHitResult > outHits;
+	TraceForHits(ActorInfo, outHits);
 
-	TArray<TEnumAsByte<EObjectTypeQuery> > ObjectTypes{
+	outHits.Sort([](const auto& left, const auto& right)
+		{
+			return left.Distance < right.Distance;
+		});
+
+	//Get closest item
+	for (const auto& hit : outHits)
+	{
+		AItemBase* itemHitted = Cast<AItemBase>((hit).GetActor());
+		if (IsValid(itemHitted))
+		{
+			itemHitted->UseItem(*ActorInfo);
+			break;
+		}
+	}
+}
+void UGAUse::TraceForHits(const FGameplayAbilityActorInfo* ActorInfo, TArray<FHitResult>& outHits)
+{
+	auto actor = ActorInfo->OwnerActor;
+
+	TArray<TEnumAsByte<EObjectTypeQuery> > objectTypes{
 		UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic),
 	};
 
-	FVector extendHeight = heightVector * m_height;
-	FVector centerPoint = location + heightVector * m_centerHeight;
+	const FVector& heightVector = actor->GetActorUpVector(); //FVector::UnitZ() -  UKismetMathLibrary::ProjectVectorOnToVector(FVector::UnitZ(), forwardVect);
+	const FVector extendHeight = heightVector * m_height;
 
-	TArray< FHitResult > outHits;
-	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), centerPoint - extendHeight/2, centerPoint - extendHeight/2, m_radius, ObjectTypes, false, {}, m_bDrawDebug ? EDrawDebugTrace::Persistent : EDrawDebugTrace::None, outHits, true);
+	const FVector& forwardVect = actor->GetActorForwardVector();
 
-	if (!outHits.IsEmpty())
-	{
-		//TODO life quality - implement std::min_element in some library
-		//find closest Hit
-		AItemBase* closestItem = nullptr;
+	auto location = actor->GetActorLocation();
+	location += forwardVect * m_forwardOffset;
 
-		double minDist = DBL_MAX;
-		for (int i = 0; i < outHits.Num();i++)
-		{
-			auto& hit = outHits[i];
+	const FVector centerPoint = location + heightVector * m_centerHeight;
 
-			AItemBase* itemHitted = Cast<AItemBase>((hit).GetActor());
-			if (IsValid(itemHitted) && outHits[i].Distance < minDist)
-			{
-				closestItem = itemHitted;
-				minDist = hit.Distance;
-			}
-		}
-
-		if (IsValid(closestItem))
-		{
-			closestItem->UseItem(*ActorInfo);
-		}
-
-		UE_LOG(LogTemp, Log, TEXT("hitted actor %s."), *closestItem->GetName());
-	}
+	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), centerPoint - extendHeight / 2, centerPoint + extendHeight / 2, m_radius, objectTypes, false, {}, m_bDrawDebug ? EDrawDebugTrace::Persistent : EDrawDebugTrace::None, outHits, true);
 }
 void UGAUse::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {

@@ -27,6 +27,10 @@ protected:
 
 	UFUNCTION()
 	virtual void OnItemBeginActivate();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemBeginActivate"))
+	void OnItemBeginActivateBP();
+
 	UFUNCTION()
 	virtual void OnItemCancelActivate();
 
@@ -34,16 +38,9 @@ protected:
 
 	UFUNCTION()
 	void PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo);
-public:
+
+protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> m_effectToApply;
-	
-private:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UBoxComponent* m_volume;
-
-
-
 
 };
