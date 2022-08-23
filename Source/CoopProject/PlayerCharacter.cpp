@@ -197,7 +197,23 @@ void APlayerCharacter::SwitchCamera()
 {
 	if (IsValid(m_cameraSelector))
 	{
+		//TODO this have to be moved to Ability in order to work
+
+		/*auto ASC = GetAbilitySystemComponent();
+		FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
+		effectContext.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle specHandle = ASC->MakeOutgoingSpec(m_effectGrabberTPS, 1, effectContext);
+		if (specHandle.IsValid())
+		{
+			ASC->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
+		}*/
 		m_cameraSelector->SwitchCamera(ECameras::NEXT_CAMERA);
 	}
+}
+
+FVector APlayerCharacter::GetCameraLocation()
+{
+	return m_followCamera->GetComponentLocation();
 }
 

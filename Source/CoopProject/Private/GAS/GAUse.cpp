@@ -24,6 +24,7 @@ void UGAUse::GrabberPrototype_InFrontOfActor(const FGameplayAbilityActorInfo* Ac
 	TArray< FHitResult > outHits;
 	TraceForHits(ActorInfo, outHits);
 
+	//TODO fix this, to calculate distance to Actor
 	outHits.Sort([](const auto& left, const auto& right)
 		{
 			return left.Distance < right.Distance;
@@ -48,7 +49,7 @@ void UGAUse::TraceForHits(const FGameplayAbilityActorInfo* ActorInfo, TArray<FHi
 		UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic),
 	};
 
-	const FVector& heightVector = actor->GetActorUpVector(); //FVector::UnitZ() -  UKismetMathLibrary::ProjectVectorOnToVector(FVector::UnitZ(), forwardVect);
+	const FVector& heightVector = actor->GetActorUpVector();
 	const FVector extendHeight = heightVector * m_height;
 
 	const FVector& forwardVect = actor->GetActorForwardVector();

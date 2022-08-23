@@ -21,6 +21,7 @@ public:
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	FVector GetCameraLocation();
 protected:
 	/** Called for forwards/backward input */
 	void MoveForward(const float Value);
@@ -30,6 +31,7 @@ protected:
 
 	/** Switch camera*/
 	void SwitchCamera();
+
 
 	/**
 	 * Called via input to turn at a given rate.
@@ -74,6 +76,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	TArray<TSubclassOf<UPlayerGameplayAbilityBase>> DefaultAbilities;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> m_effectGrabberTPS;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> m_effectGrabberISO;
 	
 private:
 	/** Camera boom positioning the camera behind the character */
