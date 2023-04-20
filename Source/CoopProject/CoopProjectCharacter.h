@@ -6,6 +6,13 @@
 #include "GameFramework/Character.h"
 #include "CoopProjectCharacter.generated.h"
 
+//THIS LIKE CREATED AUTOMATICALLY?! REMOVE THIS SHIT 
+
+
+
+
+
+
 UCLASS(config=Game)
 class ACoopProjectCharacter : public ACharacter
 {

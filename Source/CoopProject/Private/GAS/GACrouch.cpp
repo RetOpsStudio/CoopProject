@@ -14,7 +14,6 @@ void UGACrouch::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
 	if (IsValid(playerCharacter))
 	{
 		!playerCharacter->bIsCrouched ? playerCharacter->Crouch() : playerCharacter->UnCrouch();
-		
 	}
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

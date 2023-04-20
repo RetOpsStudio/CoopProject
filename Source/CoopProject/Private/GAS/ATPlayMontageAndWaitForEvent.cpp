@@ -80,7 +80,7 @@ void UATPlayMontageAndWaitForEvent::Activate()
 
 void UATPlayMontageAndWaitForEvent::ExternalCancel()
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.Get());
 
 	OnAbilityCancelled();
 	
@@ -156,7 +156,7 @@ bool UATPlayMontageAndWaitForEvent::StopPlayingMontage()
 		return false;
 	}
 
-	if (IsValid(AbilitySystemComponent) && IsValid(Ability))
+	if (IsValid(AbilitySystemComponent.Get()) && IsValid(Ability))
 	{
 		if (AbilitySystemComponent->GetAnimatingAbility() == Ability && AbilitySystemComponent->GetCurrentMontage() == MontageToPlay)
 		{
