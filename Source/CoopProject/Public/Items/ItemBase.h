@@ -18,7 +18,7 @@ public:
 	AItemBase();
 	virtual ~AItemBase() = default;
 	UFUNCTION()
-	void UseItem(const FGameplayAbilityActorInfo& usingActorInfo);
+	virtual void  UseItem(const FGameplayAbilityActorInfo& usingActorInfo);
 
 
 protected:
@@ -36,11 +36,5 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
-	UFUNCTION()
-	void PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo);
-
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> m_effectToApply;
 
 };

@@ -1,10 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Items/ItemBase.h"
-#include "AbilitySystemInterface.h"
-#include "Components/BoxComponent.h"
-#include "GAS/CoopAbilitySystemComponent.h"
-#include "GameplayEffects/GEButtonPressed.h"
+
 
 // Sets default values
 AItemBase::AItemBase()
@@ -25,27 +22,9 @@ void AItemBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo)
 	{
 		return;
 	}
-
-	PutGameplayEffectOnUsingActor(usingActorInfo);
 	OnItemBeginActivate();
 }
-void AItemBase::PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo)
-{
-	if (!IsValid(m_effectToApply))
-	{
-		return;
-	}
-	auto ASC = usingActorInfo.AbilitySystemComponent;
 
-	FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
-	effectContext.AddSourceObject(this);
-
-	FGameplayEffectSpecHandle specHandle = ASC->MakeOutgoingSpec(m_effectToApply, 1, effectContext);
-	if (specHandle.IsValid())
-	{
-		ASC->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
-	}
-}
 void AItemBase::OnItemBeginActivate()
 {
 	OnItemBeginActivateBP();
