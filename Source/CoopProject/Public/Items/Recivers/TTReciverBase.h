@@ -3,30 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../ItemBase.h"
-#include "AItemActivatorBase.generated.h"
+#include "Items/ItemBase.h"
+#include "TTReciverBase.generated.h"
+
 /**
  * 
  */
 UCLASS()
-class COOPPROJECT_API AItemActivatorBase : public AItemBase
+class COOPPROJECT_API ATTReciverBase : public AItemBase
 {
 	GENERATED_BODY()
-	
-public:
-	UFUNCTION()
-	void PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo);
 
+public:
 	virtual void UseItem(const FGameplayAbilityActorInfo& usingActorInfo) override;
 
 	virtual void StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo) override;
-
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	TSubclassOf<UGameplayEffect> m_effectToApply;
+	int m_activatorsThreshold = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reciver")
-	class ATTReciverBase* m_reciver = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes")
+	int m_currentActivators = 0;
+
+	//to enforce that item will be/stop being used once
+	bool m_bItemInUse = false; 
+
 
 };

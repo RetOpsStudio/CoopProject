@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "./Items/Activators/AItemActivatorBase.h"
+#include "Items/Activators/AItemActivatorBase.h"
+#include "Items/Recivers/TTReciverBase.h"
+
 #include "AbilitySystemInterface.h"
 //#include "Components/BoxComponent.h"
 #include "GAS/CoopAbilitySystemComponent.h"
@@ -13,8 +15,25 @@ void AItemActivatorBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo
 	{
 		return;
 	}
+	if (IsValid(m_reciver))
+	{
+		m_reciver->UseItem(usingActorInfo);
+	}
 	PutGameplayEffectOnUsingActor(usingActorInfo);
 	Super::UseItem(usingActorInfo);
+}
+void AItemActivatorBase::StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo)
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+	if (IsValid(m_reciver))
+	{
+		m_reciver->StopUsingItem(usingActorInfo);
+	}
+	//PutGameplayEffectOnUsingActor(usingActorInfo);
+	Super::StopUsingItem(usingActorInfo);
 }
 
 void AItemActivatorBase::PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo)

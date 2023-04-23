@@ -15,8 +15,6 @@ UGAUse::UGAUse() : Super()
 void UGAUse::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	GrabberPrototype_InFrontOfActor(ActorInfo);
-
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 void UGAUse::GrabberPrototype_InFrontOfActor(const FGameplayAbilityActorInfo* ActorInfo)
@@ -33,10 +31,10 @@ void UGAUse::GrabberPrototype_InFrontOfActor(const FGameplayAbilityActorInfo* Ac
 	//Get closest item
 	for (const auto& hit : outHits)
 	{
-		AItemBase* itemHitted = Cast<AItemBase>((hit).GetActor());
-		if (IsValid(itemHitted))
+		m_itemToUse = Cast<AItemBase>((hit).GetActor());
+		if (IsValid(m_itemToUse))
 		{
-			itemHitted->UseItem(*ActorInfo);
+			m_itemToUse->UseItem(*ActorInfo);
 			break;
 		}
 	}
@@ -61,7 +59,13 @@ void UGAUse::TraceForHits(const FGameplayAbilityActorInfo* ActorInfo, TArray<FHi
 
 	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), centerPoint - extendHeight / 2, centerPoint + extendHeight / 2, m_radius, objectTypes, false, {}, m_bDrawDebug ? EDrawDebugTrace::Persistent : EDrawDebugTrace::None, outHits, true);
 }
-void UGAUse::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+
+
+void UGAUse::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	if (IsValid(m_itemToUse))
+	{
+		m_itemToUse->StopUsingItem(*ActorInfo);
+	}
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, true, false) ;
 }

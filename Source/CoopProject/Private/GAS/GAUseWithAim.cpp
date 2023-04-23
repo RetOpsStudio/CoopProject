@@ -21,7 +21,7 @@ void UGAUseWithAim::TraceForHits(const FGameplayAbilityActorInfo* ActorInfo, TAr
 
 	const FVector& forwardVect = actor->GetActorForwardVector();
 
-	auto location = actor->GetActorLocation();
+	FVector location = actor->GetActorLocation();
 
 	const FVector centerPoint = location + heightVector * m_centerHeight;
 	FVector grabberDirection = centerPoint - actor->GetCameraLocation();

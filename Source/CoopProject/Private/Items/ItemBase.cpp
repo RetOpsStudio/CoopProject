@@ -18,11 +18,20 @@ void AItemBase::BeginPlay()
 
 void AItemBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	if (!HasAuthority())
+	if (!HasAuthority()) //figure out if this is neccesary here
 	{
 		return;
 	}
 	OnItemBeginActivate();
+}
+
+void AItemBase::StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo)
+{
+	if (!HasAuthority()) //figure out if this is neccesary here
+	{
+		return;
+	}
+	OnItemEndActivate();
 }
 
 void AItemBase::OnItemBeginActivate()
@@ -32,9 +41,13 @@ void AItemBase::OnItemBeginActivate()
 
 void AItemBase::OnItemCancelActivate()
 {
-	
+	OnItemCancelActivateBP();
 }
 
+void AItemBase::OnItemEndActivate()
+{
+	OnItemEndActivateBP();
+}
 
 void AItemBase::PostInitializeComponents()
 {

@@ -17,9 +17,12 @@ public:
 	// Sets default values for this actor's properties
 	AItemBase();
 	virtual ~AItemBase() = default;
+
 	UFUNCTION()
 	virtual void  UseItem(const FGameplayAbilityActorInfo& usingActorInfo);
 
+	UFUNCTION()
+	virtual void  StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo);
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,11 +31,22 @@ protected:
 	UFUNCTION()
 	virtual void OnItemBeginActivate();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemBeginActivate"))
-	void OnItemBeginActivateBP();
 
 	UFUNCTION()
 	virtual void OnItemCancelActivate();
+
+	UFUNCTION()
+	virtual void OnItemEndActivate();
+
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemBeginActivate"))
+	void OnItemBeginActivateBP();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemCancelActivate"))
+	void OnItemCancelActivateBP();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemEndActivate"))
+	void OnItemEndActivateBP();
 
 	virtual void PostInitializeComponents() override;
 
