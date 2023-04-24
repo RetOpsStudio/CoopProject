@@ -25,12 +25,12 @@ public:
 	virtual void  StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo);
 
 protected:
-	// Called when the game starts or when spawned
+	//AActor //TODO add to every class
 	virtual void BeginPlay() override;
+	//~AActor
 
 	UFUNCTION()
 	virtual void OnItemBeginActivate();
-
 
 	UFUNCTION()
 	virtual void OnItemCancelActivate();
@@ -38,17 +38,17 @@ protected:
 	UFUNCTION()
 	virtual void OnItemEndActivate();
 
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "OnItemBeginActivate"))
+	void OnItemBeginActivateBP(); //delete BP from name
+	virtual void OnItemBeginActivateBP_Implementation();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemBeginActivate"))
-	void OnItemBeginActivateBP();
-
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemCancelActivate"))
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "OnItemCancelActivate"))
 	void OnItemCancelActivateBP();
+	virtual void OnItemCancelActivateBP_Implementation();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnItemEndActivate"))
+	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "OnItemEndActivate"))
 	void OnItemEndActivateBP();
+	virtual void OnItemEndActivateBP_Implementation();
 
 	virtual void PostInitializeComponents() override;
-
-
 };

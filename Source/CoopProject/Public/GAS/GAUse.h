@@ -41,5 +41,5 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Properties")
 	double m_bDrawDebug = true;
 
-	class AItemBase* m_itemToUse = nullptr;
+	class ICharacterUsable m_itemToUse = nullptr;
 };

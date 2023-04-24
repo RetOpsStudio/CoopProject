@@ -16,21 +16,23 @@ void AItemBase::BeginPlay()
 	Super::BeginPlay();	
 }
 
+
+
 void AItemBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	if (!HasAuthority()) //figure out if this is neccesary here
-	{
-		return;
-	}
+	//if (!HasAuthority()) //figure out if this is neccesary here
+	//{
+	//	return;
+	//}
 	OnItemBeginActivate();
 }
 
 void AItemBase::StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	if (!HasAuthority()) //figure out if this is neccesary here
-	{
-		return;
-	}
+	//if (!HasAuthority()) //figure out if this is neccesary here
+	//{
+	//	return;
+	//}
 	OnItemEndActivate();
 }
 
@@ -49,6 +51,19 @@ void AItemBase::OnItemEndActivate()
 	OnItemEndActivateBP();
 }
 
+void AItemBase::OnItemBeginActivateBP_Implementation()
+{
+	//logic here
+}
+
+void AItemBase::OnItemEndActivateBP_Implementation()
+{
+	//logic here
+}
+void AItemBase::OnItemCancelActivateBP_Implementation()
+{
+	//logic here
+}
 void AItemBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();

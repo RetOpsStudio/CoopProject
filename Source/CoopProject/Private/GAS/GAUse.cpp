@@ -5,7 +5,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
-#include "Items/ItemBase.h"
+#include "Items/CharacterUsable.h"
+
 
 UGAUse::UGAUse() : Super()
 {
@@ -31,10 +32,10 @@ void UGAUse::GrabberPrototype_InFrontOfActor(const FGameplayAbilityActorInfo* Ac
 	//Get closest item
 	for (const auto& hit : outHits)
 	{
-		m_itemToUse = Cast<AItemBase>((hit).GetActor());
-		if (IsValid(m_itemToUse))
+		m_itemToUse = Cast<ICharacterUsable>(hit.GetActor());
+		if (m_itemToUse)
 		{
-			m_itemToUse->UseItem(*ActorInfo);
+			m_itemToUse->Use(*ActorInfo);
 			break;
 		}
 	}
@@ -63,9 +64,10 @@ void UGAUse::TraceForHits(const FGameplayAbilityActorInfo* ActorInfo, TArray<FHi
 
 void UGAUse::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
-	if (IsValid(m_itemToUse))
+	if (m_itemToUse)
 	{
-		m_itemToUse->StopUsingItem(*ActorInfo);
+		m_itemToUse->StopUsing(*ActorInfo);
+		m_itemToUse = nullptr;
 	}
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, true, false) ;
 }

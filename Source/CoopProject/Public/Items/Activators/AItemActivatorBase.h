@@ -4,29 +4,34 @@
 
 #include "CoreMinimal.h"
 #include "../ItemBase.h"
+#include "../CharacterUsable.h"
 #include "AItemActivatorBase.generated.h"
 /**
  * 
  */
 UCLASS()
-class COOPPROJECT_API AItemActivatorBase : public AItemBase
+class COOPPROJECT_API AItemActivatorBase : public AItemBase, public ICharacterUsable
 {
 	GENERATED_BODY()
 	
 public:
 	UFUNCTION()
-	void PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo);
+	void ApplyGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo);
 
 	virtual void UseItem(const FGameplayAbilityActorInfo& usingActorInfo) override;
 
 	virtual void StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo) override;
 
+	//UCharacterUsable
+	virtual void Use(const struct FGameplayAbilityActorInfo& usingActorInfo) override;
+	virtual void StopUsing(const struct FGameplayAbilityActorInfo& usingActorInfo) override;
+	//~UCharaterUsable
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> m_effectToApply;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reciver")
-	class ATTReciverBase* m_reciver = nullptr;
+	AActor* m_reciver = nullptr; //reciver should be an array
 
 };

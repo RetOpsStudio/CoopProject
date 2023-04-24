@@ -3,51 +3,77 @@
 
 #include "Items/Activators/AItemActivatorBase.h"
 #include "Items/Recivers/TTReciverBase.h"
-
+#include "Items/ActivatorUsable.h"
 #include "AbilitySystemInterface.h"
-//#include "Components/BoxComponent.h"
 #include "GAS/CoopAbilitySystemComponent.h"
-//#include "GameplayEffects/GEButtonPressed.h"
 
-void AItemActivatorBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo)
+
+void AItemActivatorBase::Use(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	if (!HasAuthority())
-	{
-		return;
-	}
-	if (IsValid(m_reciver))
-	{
-		m_reciver->UseItem(usingActorInfo);
-	}
-	PutGameplayEffectOnUsingActor(usingActorInfo);
+	//if (!HasAuthority())
+	//{
+	//	return;
+	//}
+	UseItem(usingActorInfo);
+}
+void AItemActivatorBase::StopUsing(const FGameplayAbilityActorInfo& usingActorInfo)
+{
+	//if (!HasAuthority())
+	//{
+	//	return;
+	//}
+	StopUsingItem(usingActorInfo);
+}
+//CHECK FOR NULLPTR's
+void AItemActivatorBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo) //put this on interface, add 2 interfaces or "usable by player"
+{
 	Super::UseItem(usingActorInfo);
+	IActivatorUsable* reciver = Cast<IActivatorUsable>(m_reciver);
+	if (reciver)
+	{
+		reciver->Use(usingActorInfo);
+	}
+
+	ApplyGameplayEffectOnUsingActor(usingActorInfo);
+	
 }
 void AItemActivatorBase::StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	if (!HasAuthority())
+	//if (!HasAuthority())
+	//{
+	//	return;
+	//}
+	
+	IActivatorUsable* reciver = Cast<IActivatorUsable>(m_reciver);
+	if (reciver)
 	{
-		return;
-	}
-	if (IsValid(m_reciver))
-	{
-		m_reciver->StopUsingItem(usingActorInfo);
+		reciver->StopUsing(usingActorInfo);
 	}
 	//PutGameplayEffectOnUsingActor(usingActorInfo);
 	Super::StopUsingItem(usingActorInfo);
 }
 
-void AItemActivatorBase::PutGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo)
+
+
+void AItemActivatorBase::ApplyGameplayEffectOnUsingActor(const FGameplayAbilityActorInfo& usingActorInfo)
 {
 	if (!IsValid(m_effectToApply))
 	{
 		return;
 	}
-	auto ASC = usingActorInfo.AbilitySystemComponent;
+
+	TWeakObjectPtr<UAbilitySystemComponent> ASC = usingActorInfo.AbilitySystemComponent;
+
+	if (!IsValid(ASC.Get()))
+	{
+		return;
+	}
 
 	FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
 	effectContext.AddSourceObject(this);
 
 	FGameplayEffectSpecHandle specHandle = ASC->MakeOutgoingSpec(m_effectToApply, 1, effectContext);
+
 	if (specHandle.IsValid())
 	{
 		ASC->ApplyGameplayEffectSpecToSelf(*specHandle.Data.Get());
