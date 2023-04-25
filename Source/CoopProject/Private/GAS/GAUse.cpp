@@ -5,6 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
+#include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Items/CharacterUsable.h"
 
 
@@ -15,7 +16,14 @@ UGAUse::UGAUse() : Super()
 
 void UGAUse::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	GrabberPrototype_InFrontOfActor(ActorInfo);
+	if (UAbilityTask_WaitInputRelease* WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this, true))
+	{
+		WaitInputReleaseTask->OnRelease.AddDynamic(this, &UGAUse::EndAbility);
+		WaitInputReleaseTask->ReadyForActivation();
+	}
 }
 
 void UGAUse::GrabberPrototype_InFrontOfActor(const FGameplayAbilityActorInfo* ActorInfo)
@@ -62,12 +70,17 @@ void UGAUse::TraceForHits(const FGameplayAbilityActorInfo* ActorInfo, TArray<FHi
 }
 
 
-void UGAUse::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
+void UGAUse::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled) ;
 	if (m_itemToUse)
 	{
 		m_itemToUse->StopUsing(*ActorInfo);
 		m_itemToUse = nullptr;
 	}
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, true, false) ;
+}
+
+void UGAUse::EndAbility(float timeHeld)
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
