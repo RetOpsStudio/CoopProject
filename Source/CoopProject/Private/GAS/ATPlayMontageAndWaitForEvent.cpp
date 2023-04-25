@@ -236,7 +236,7 @@ void UATPlayMontageAndWaitForEvent::OnMontageEnded(UAnimMontage* Montage, bool b
 }
 
 void UATPlayMontageAndWaitForEvent::OnGameplayEvent(FGameplayTag EventTag,
-                                                    const FGameplayEventData* Payload)
+													const FGameplayEventData* Payload)
 {
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
