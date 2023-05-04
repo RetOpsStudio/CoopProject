@@ -32,6 +32,6 @@ protected:
 	TSubclassOf<UGameplayEffect> m_effectToApply;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reciver")
-	AActor* m_reciver = nullptr; //reciver should be an array
+	TArray<AActor*> m_recivers;; //reciver should be an array
 
 };

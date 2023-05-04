@@ -41,7 +41,7 @@ protected:
 	double m_height = 100.f;
 	//draw debug?
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Properties")
-	double m_bDrawDebug = true;
+	bool m_bDrawDebug = true;
 
 	class ICharacterUsable* m_itemToUse = nullptr;
 };

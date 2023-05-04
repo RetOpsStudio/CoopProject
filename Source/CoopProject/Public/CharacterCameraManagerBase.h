@@ -20,6 +20,7 @@ public:
 
 	virtual void Setup(APlayerCharacter* playerCharacter, USpringArmComponent* cameraBoom, UCameraComponent* followCamera);
 	virtual void SetupPlayerCamera() { return; }
+
 protected:
 	UPROPERTY()
 	USpringArmComponent* m_cameraBoom = nullptr;

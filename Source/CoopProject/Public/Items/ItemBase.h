@@ -29,26 +29,35 @@ protected:
 	virtual void BeginPlay() override;
 	//~AActor
 
-	UFUNCTION()
+	UFUNCTION(NetMulticast, Reliable)
 	virtual void OnItemBeginActivate();
+	virtual void OnItemBeginActivate_Implementation();
 
-	UFUNCTION()
+	UFUNCTION(NetMulticast, Reliable)
 	virtual void OnItemCancelActivate();
+	virtual void OnItemCancelActivate_Implementation();
 
-	UFUNCTION()
+	UFUNCTION(NetMulticast, Reliable)
 	virtual void OnItemEndActivate();
+	virtual void OnItemEndActivate_Implementation();
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "OnItemBeginActivate"))
 	void OnItemBeginActivateBP(); //delete BP from name
-	virtual void OnItemBeginActivateBP_Implementation();
+	virtual void OnItemBeginActivateBP_Implementation() {};
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "OnItemCancelActivate"))
 	void OnItemCancelActivateBP();
-	virtual void OnItemCancelActivateBP_Implementation();
+	virtual void OnItemCancelActivateBP_Implementation() {};
 
 	UFUNCTION(BlueprintNativeEvent, meta = (DisplayName = "OnItemEndActivate"))
 	void OnItemEndActivateBP();
-	virtual void OnItemEndActivateBP_Implementation();
+	virtual void OnItemEndActivateBP_Implementation() {};
 
 	virtual void PostInitializeComponents() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Properties")
+	USceneComponent* m_rootComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Properties")
+	UStaticMeshComponent* m_staticMesh = nullptr;
 };

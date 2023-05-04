@@ -10,44 +10,43 @@
 
 void AItemActivatorBase::Use(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	//if (!HasAuthority())
-	//{
-	//	return;
-	//}
 	UseItem(usingActorInfo);
 }
 void AItemActivatorBase::StopUsing(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	//if (!HasAuthority())
-	//{
-	//	return;
-	//}
 	StopUsingItem(usingActorInfo);
 }
 //CHECK FOR NULLPTR's
-void AItemActivatorBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo) //put this on interface, add 2 interfaces or "usable by player"
+void AItemActivatorBase::UseItem(const FGameplayAbilityActorInfo& usingActorInfo)
 {
 	Super::UseItem(usingActorInfo);
-	IActivatorUsable* reciver = Cast<IActivatorUsable>(m_reciver);
-	if (reciver)
+	if (!m_recivers.IsEmpty())
 	{
-		reciver->Use(usingActorInfo);
+		for (AActor* reciver : m_recivers)
+		{
+			IActivatorUsable* reciverInterfce = Cast<IActivatorUsable>(reciver);
+			if (reciverInterfce)
+			{
+				reciverInterfce->Use(usingActorInfo);
+			}
+		}
 	}
-
 	ApplyGameplayEffectOnUsingActor(usingActorInfo);
 	
 }
 void AItemActivatorBase::StopUsingItem(const FGameplayAbilityActorInfo& usingActorInfo)
 {
-	//if (!HasAuthority())
-	//{
-	//	return;
-	//}
-	
-	IActivatorUsable* reciver = Cast<IActivatorUsable>(m_reciver);
-	if (reciver)
+
+	if (!m_recivers.IsEmpty())
 	{
-		reciver->StopUsing(usingActorInfo);
+		for (AActor* reciver : m_recivers)
+		{
+			IActivatorUsable* reciverInterfce = Cast<IActivatorUsable>(reciver);
+			if (reciverInterfce)
+			{
+				reciverInterfce->StopUsing(usingActorInfo);
+			}
+		}
 	}
 	//PutGameplayEffectOnUsingActor(usingActorInfo);
 	Super::StopUsingItem(usingActorInfo);
